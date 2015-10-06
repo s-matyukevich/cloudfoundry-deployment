@@ -5,7 +5,7 @@ name: cf
 director_uuid: REPLACE_WITH_DIRECTOR_ID
 
 releases:
-- {name: cf, version: 217}
+- {name: cf, version: 219}
 
 networks:
 - name: cf_private
@@ -24,7 +24,7 @@ networks:
   subnets:
   - range: 10.0.0.0/24
     gateway: 10.0.0.1
-    dns: [10.0.0.2]
+    dns: [10.0.0.6]
     reserved: ["10.0.0.2 - 10.0.0.10"]
     cloud_properties:
       subnet: {{ public_subnet_id }}

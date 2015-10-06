@@ -86,6 +86,9 @@
 
     "Mappings" : {
 
+      "CfReleasesMap" : {
+        "219"      : {"bosh": "201", "diego": "0.1434.0", "garden-linux": "v0.307.0"}
+      },
 
       "NatRegionMap" : {
         "us-east-1"      : { "AMI" : "ami-d05e75b8" }
@@ -267,10 +270,20 @@
 
             },
 
+            "install_diego": {
+              "commands" : {
+                "08_upload_release" : {
+                  "command" : {"Fn::Join": [ "", [ "su ubuntu -c \"bosh upload release https://s3.amazonaws.com/altoros-cf-releases/diego-0.1434.0.tgz >>/var/log/bosh.log\""]]},
+                  "env" : { "HOME" : "/home/ubuntu" },
+                  "ignoreErrors": "true"
+                }
+              }
+            },
+
             "install_cf_staff": {
               "files": {
                 "/home/ubuntu/cf/manifest/cf.yml" : {
-                  "source": { "Fn::Join" : ["", ["https://s3.amazonaws.com/", { "Ref":"bucketName" }, "/cf-", { "Ref":"cfRelease" }, ".yml"]] },
+                  "source": { "Fn::Join" : ["", ["https://s3.amazonaws.com/", { "Ref":"bucketName" }, "/cf/cf-", { "Ref":"cfRelease" }, ".yml"]] },
                   "context" : {
                      "private_subnet_id" : { "Ref" : "CFSubnetid" },
                      "public_subnet_id" : { "Ref" : "boshSubnetid" },
@@ -283,11 +296,6 @@
                   },
                   "mode" : "000644",
                   "authentication":"S3AccessCreds"
-                },
-
-                "/home/ubuntu/cf/releases/cf-217.tgz": {
-                  "source": "https://s3.amazonaws.com/altoros-cf-releases/cf-217.tgz",
-                  "mode" : "000644"
                 },
 
                 "/home/ubuntu/cf/cf-cli_amd64.deb": {
@@ -339,7 +347,7 @@
                 },
 
                 "/home/ubuntu/my-bosh/micro.yml" : {
-                  "source": { "Fn::Join" : ["", ["https://s3.amazonaws.com/", { "Ref":"bucketName" }, "/micro-", { "Ref":"cfRelease" }, ".yml"]] },
+                  "source": { "Fn::Join" : ["", ["https://s3.amazonaws.com/", { "Ref":"bucketName" }, "/bosh/micro-", { "Fn::FindInMap" : [ "CfReleasesMap", { "Ref" : "cfRelease" }, "bosh"]}, ".yml"]] },
                   "context" : {
                     "boshaz": { "Ref" : "boshAZ" },
                     "boshSubnetid": { "Ref" : "boshSubnetid" },

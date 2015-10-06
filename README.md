@@ -1,13 +1,15 @@
-Cloud Foundry Deployment to AWS
-===============================
+#Cloud Foundry Deployment to AWS
 
-Set of Cloud Formation templates to deploy Cloud Foundry to AWS.
+Ther repository includes  set of Cloud Formation templates to deploy Cloud Foundry on AWS.
+The deployment is an example of a minimalistic deployment of Cloud Foundry, including all crucial components for its basic funcionality. It allows you to deploy Cloud Foundry for educational purposes, so you can poke around and break things.
 
-Prerequisites:
+IMPORTANT: This is not meant to be used for a production level deployment as it doesn't include features such as high availability and security.
+
+###Prerequisites:
 - aws cli
 - env variables (copy from .envrc-example to .envrc and source it)
 
-How To Use:
+##How To Use:
 
 1. Setup environment variables. Use .envrc-example file as an example.
 2. To deploy CF to AWS:
@@ -51,13 +53,13 @@ $ssh -i bosh.pem ubuntu@IP_ADDRESS_OF_JB
 ```
 To check your CF deployment:
 ```
-$cf login -u admin -p PASSWORD -a api.IP_OF_LB.xip.io --skip-ssl-validation
-$cf create-space dev && cf target -o default_organization -s dev
-$git clone https://github.com/cloudfoundry/cf-acceptance-tests.git && $cd cf-acceptance-tests/assets/dora
-$cf push dora && cf logs dora --recent
+cf login -u admin -p PASSWORD -a api.IP_OF_LB.xip.io --skip-ssl-validation
+cf create-space dev && cf target -o default_organization -s dev
+git clone https://github.com/cloudfoundry/cf-acceptance-tests.git && cd cf-acceptance-tests/assets/dora
+cf push dora && cf logs dora --recent
 ```
 
-Deletion of stack:
+##Deletion of stack:
 
 IMPORTANT: Before deletion of stack do not forget to delete (from JumpBox):
 - CF deployment
@@ -65,13 +67,18 @@ IMPORTANT: Before deletion of stack do not forget to delete (from JumpBox):
 - micro bosh instance
 ```$cd /home/ubuntu/my-bosh && bosh-init delete micro.yml```
 
-
-TODOs:
-- secure deployment (SG, ACLs, generated passwords, etc)
-- use spot instances
+###WIP:
 - add Diego
+  - add mappings of releases (BOSH - CF - Diego)
+
+###TODOs:
+- secure deployment (SG, ACLs, generated passwords, keys, certificates etc)
+- use spot instances
 - add .Net cell to Diego
 
-Useful links:
+####Useful links:
 
+Diego Windows Release - https://github.com/cloudfoundry-incubator/diego-windows-release
+Garden Windows Release - https://github.com/cloudfoundry-incubator/garden-windows-release
+Generating SSL certificate - http://docs.pivotal.io/pivotalcf/customizing/self-signed-ssl.html
 http://www.markkropf.com/blog/2015/5/17/setup-lattice-to-run-your-windows-apps

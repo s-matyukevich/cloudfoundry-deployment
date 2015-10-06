@@ -33,8 +33,7 @@ upload-templates() {
     aws s3 cp templates/$file s3://$bucket_name/
   done
   aws s3 cp bosh.pem s3://$bucket_name/
-  aws s3 cp manifests/cf/cf-${CF_RELEASE}.yml s3://$bucket_name/
-  aws s3 cp manifests/bosh/micro-${CF_RELEASE}.yml s3://$bucket_name/
+  aws s3 cp manifests/ s3://$bucket_name/ --recursive --include "*.yml"
 }
 
 
