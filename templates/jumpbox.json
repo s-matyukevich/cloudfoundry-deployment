@@ -87,7 +87,7 @@
     "Mappings" : {
 
       "CfReleasesMap" : {
-        "219"      : {"bosh": "201", "diego": "0.1434.0", "garden-linux": "v0.307.0"}
+        "219"      : {"bosh": "201", "diego": "0.1434.0", "gardenLinux": "v0.307.0"}
       },
 
       "NatRegionMap" : {
@@ -413,7 +413,7 @@
 
         "CreationPolicy": {
           "ResourceSignal": {
-            "Timeout": "PT30M"
+            "Timeout": "PT2H"
           }
 
         },
