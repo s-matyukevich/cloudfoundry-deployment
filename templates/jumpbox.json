@@ -87,7 +87,9 @@
     "Mappings" : {
 
       "CfReleasesMap" : {
-        "219"      : {"bosh": "201", "diego": "0.1434.0", "gardenLinux": "v0.307.0"}
+        "217"      : {"stemcell": "3026", "bosh": "201", "diego": "0.1428.0", "gardenLinux": "0.303.0"},
+        "218"      : {"stemcell": "3026", "bosh": "201", "diego": "0.1430.0", "gardenLinux": "0.305.0"},
+        "219"      : {"stemcell": "3026", "bosh": "201", "diego": "0.1434.0", "gardenLinux": "0.307.0"}
       },
 
       "NatRegionMap" : {
@@ -225,45 +227,38 @@
                 "04_target_bosh" : {
                   "command" : { "Fn::Join" : ["", ["su ubuntu -c \"bosh -n target ", { "Ref":"boshEIP" }, " microbosh >>/var/log/bosh.log\""]] },
                   "cwd": "/home/ubuntu/my-bosh",
-                  "env" : { "HOME" : "/home/ubuntu" },
-                  "ignoreErrors": "true"
+                  "env" : { "HOME" : "/home/ubuntu" }
                 },
 
                 "05_bosh_login" : {
                   "command" : "su ubuntu -c \"bosh login admin admin >>/var/log/bosh.log\"",
                   "cwd": "/home/ubuntu/my-bosh",
-                  "env" : { "HOME" : "/home/ubuntu" },
-                  "ignoreErrors": "true"
+                  "env" : { "HOME" : "/home/ubuntu" }
                 },
 
                 "06_render_manifest" : {
                   "command" : "su ubuntu -c \"sed -i -e \"s/REPLACE_WITH_DIRECTOR_ID/$(bosh status --uuid)/\" /home/ubuntu/cf/manifest/cf.yml\"",
-                  "env" : { "HOME" : "/home/ubuntu" },
-                  "ignoreErrors": "true"
+                  "env" : { "HOME" : "/home/ubuntu" }
                 },
 
                 "07_bosh_upload_stemcell" : {
-                  "command" : "su ubuntu -c \"bosh upload stemcell https://bosh-jenkins-artifacts.s3.amazonaws.com/bosh-stemcell/aws/light-bosh-stemcell-3074-aws-xen-hvm-ubuntu-trusty-go_agent.tgz >>/var/log/bosh.log\"",
-                  "env" : { "HOME" : "/home/ubuntu" },
-                  "ignoreErrors": "true"
+                  "command" : {"Fn::Join": [ "", [ "su ubuntu -c \"bosh upload stemcell https://bosh-jenkins-artifacts.s3.amazonaws.com/bosh-stemcell/aws/light-bosh-stemcell-", { "Fn::FindInMap" : [ "CfReleasesMap", { "Ref" : "cfRelease" }, "stemcell"] } ,"-aws-xen-hvm-ubuntu-trusty-go_agent.tgz >>/var/log/bosh.log\""]]},
+                  "env" : { "HOME" : "/home/ubuntu" }
                 },
 
                 "08_upload_release" : {
                   "command" : {"Fn::Join": [ "", [ "su ubuntu -c \"bosh upload release https://s3.amazonaws.com/altoros-cf-releases/cf-", { "Ref": "cfRelease" }, ".tgz >>/var/log/bosh.log\""]]},
-                  "env" : { "HOME" : "/home/ubuntu" },
-                  "ignoreErrors": "true"
+                  "env" : { "HOME" : "/home/ubuntu" }
                 },
 
                 "09_bosh_deployment" : {
                   "command" :  "su ubuntu -c \"bosh deployment /home/ubuntu/cf/manifest/cf.yml >>/var/log/bosh.log\"",
-                  "env" : { "HOME" : "/home/ubuntu" },
-                  "ignoreErrors": "true"
+                  "env" : { "HOME" : "/home/ubuntu" }
                 },
 
                 "10_bosh_deploy" : {
                   "command" : "su ubuntu -c \"bosh -n deploy>>/var/log/bosh.log\"",
-                  "env" : { "HOME" : "/home/ubuntu" },
-                  "ignoreErrors": "true"
+                  "env" : { "HOME" : "/home/ubuntu" }
                 }
 
               }
@@ -272,11 +267,15 @@
 
             "install_diego": {
               "commands" : {
-                "08_upload_release" : {
-                  "command" : {"Fn::Join": [ "", [ "su ubuntu -c \"bosh upload release https://s3.amazonaws.com/altoros-cf-releases/diego-0.1434.0.tgz >>/var/log/bosh.log\""]]},
-                  "env" : { "HOME" : "/home/ubuntu" },
-                  "ignoreErrors": "true"
+                "01_upload_diego_release" : {
+                  "command" : {"Fn::Join": [ "", [ "su ubuntu -c \"bosh upload release https://s3.amazonaws.com/altoros-cf-releases/diego-", { "Fn::FindInMap" : [ "CfReleasesMap", { "Ref" : "cfRelease" }, "diego"]}, ".tgz >>/var/log/bosh.log\""]]},
+                  "env" : { "HOME" : "/home/ubuntu" }
+                },
+                "02_upload_garden_linux_release" : {
+                  "command" : {"Fn::Join": [ "", [ "su ubuntu -c \"bosh upload release https://s3.amazonaws.com/altoros-cf-releases/garden-linux-", { "Fn::FindInMap" : [ "CfReleasesMap", { "Ref" : "cfRelease" }, "gardenLinux"]}, ".tgz >>/var/log/bosh.log\""]]},
+                  "env" : { "HOME" : "/home/ubuntu" }
                 }
+
               }
             },
 
@@ -289,7 +288,6 @@
                      "public_subnet_id" : { "Ref" : "boshSubnetid" },
                      "public_sg_id" : { "Ref" : "jumpBoxSGId" },
                      "bosh_sg_id" : { "Ref" : "boshSGId" },
-                     "bosh_stemcell_version": "latest",
                      "availability_zone": { "Ref" : "boshAZ" },
                      "eip": { "Ref" : "CFEIP" },
                      "system_domain": { "Fn::Join" : ["", [ { "Ref":"CFEIP" }, ".xip.io"]] }

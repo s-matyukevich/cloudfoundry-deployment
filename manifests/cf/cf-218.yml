@@ -5,7 +5,7 @@ name: cf
 director_uuid: REPLACE_WITH_DIRECTOR_ID
 
 releases:
-- {name: cf, version: 219}
+- {name: cf, version: 218}
 
 networks:
 - name: cf_private

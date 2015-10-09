@@ -20,8 +20,8 @@ $scripts/stack.sh create
 After a while you will get running CF deployment including:
 - EC2 key pair (stored as bosh.pem)
 - VPC with NAT and JumpBox instances
-- microbosh instance
-- CF deployment (aws_minimal CF template used) like:
+- (micro)BOSH instance
+- CF deployment (we use aws_minimal CF manifest from cf-release) like:
 ```
 +------------------------------------+---------+---------------+-------------+
 | Job/index                          | State   | Resource Pool | IPs         |
@@ -30,7 +30,7 @@ After a while you will get running CF deployment including:
 | doppler_z1/0                       | running | small_z1      | 10.0.16.6   |
 | etcd_z1/0                          | running | small_z1      | 10.0.16.104 |
 | ha_proxy_z1/0                      | running | small_z1      | 10.0.0.11   |
-|                                    |         |               | 52.3.105.39 |
+|                                    |         |               | PUB_IP_ADDR |
 | hm9000_z1/0                        | running | small_z1      | 10.0.16.5   |
 | loggregator_trafficcontroller_z1/0 | running | small_z1      | 10.0.16.7   |
 | nats_z1/0                          | running | small_z1      | 10.0.16.103 |
@@ -47,13 +47,14 @@ To check status of your deployment and to find IP address of JumpBox and CF's lo
 $scripts/stack.sh describe
 ```
 
-To access JumpBox:
+The script generates RSA key pair so to access JumpBox run:
 ```
-$ssh -i bosh.pem ubuntu@IP_ADDRESS_OF_JB
+$ssh -i bosh.pem ubuntu@PUB_IP_ADDRESS_OF_JUMPBOX
 ```
 To check your CF deployment:
 ```
-cf login -u admin -p PASSWORD -a api.IP_OF_LB.xip.io --skip-ssl-validation
+# PUB_IP_ADDR is the address of load balancer.
+cf login -u admin -p PASSWORD -a api.PUB_IP_ADDR.xip.io --skip-ssl-validation
 cf create-space dev && cf target -o default_organization -s dev
 git clone https://github.com/cloudfoundry/cf-acceptance-tests.git && cd cf-acceptance-tests/assets/dora
 cf push dora && cf logs dora --recent
