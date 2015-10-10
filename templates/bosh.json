@@ -142,7 +142,7 @@
     "Outputs": {
       "JumpBoxPublicIp": {
         "Description": "Public IP address of JumpBox instance",
-        "Value": { "Fn::GetAtt" : [  "jumpBox", "Outputs.PublicIp" ] }
+        "Value": { "Fn::GetAtt" : [  "jumpBox", "Outputs.JumpBoxPublicIp" ] }
       }
     }
 }

@@ -74,5 +74,5 @@ update-stack() {
 case $1 in
   create ) create-stack;;
   update ) update-stack;;
-  describe ) aws cloudformation describe-stacks --stack-name $STACK_NAME --output table;;
+  describe ) aws cloudformation describe-stacks --stack-name $STACK_NAME --output text;;
 esac
