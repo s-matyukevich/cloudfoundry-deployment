@@ -59,6 +59,14 @@ cf create-space dev && cf target -o default_organization -s dev
 git clone https://github.com/cloudfoundry/cf-acceptance-tests.git && cd cf-acceptance-tests/assets/dora
 cf push dora && cf logs dora --recent
 ```
+To check Diego:
+```
+cf push dora --no-start
+cf install-plugin Diego-Beta -r CF-Community
+cf enable-diego dora
+cf start dora && cf logs dora --recent
+```
+
 
 ##Deletion of stack:
 
@@ -67,6 +75,12 @@ IMPORTANT: Before deletion of stack do not forget to delete (from JumpBox):
 ```$bosh -n delete deployment cf```
 - micro bosh instance
 ```$cd /home/ubuntu/my-bosh && bosh-init delete micro.yml```
+
+```
+ssh -i bosh.pem ubuntu@ec2-52-23-247-34.compute-1.amazonaws.com bosh -n delete deployment diego
+ssh -i bosh.pem ubuntu@ec2-52-23-247-34.compute-1.amazonaws.com bosh -n delete deployment cf
+ssh -i bosh.pem ubuntu@ec2-52-23-247-34.compute-1.amazonaws.com bosh-init delete /home/ubuntu/my-bosh/micro.yml
+```
 
 ###WIP:
 - add Diego

@@ -1,11 +1,11 @@
-director_uuid: d05b458c-08a8-426a-93aa-a5bb950cdc2b # <- REPLACE WITH YOUR UUID
+director_uuid: REPLACE_WITH_DIRECTOR_ID # <- REPLACE WITH YOUR UUID
 
 compilation:
   workers: 6
   network: cf_private
   reuse_compilation_vms: true
   cloud_properties:
-    availability_zone: us-east-1d
+    availability_zone: {{ availability_zone }}
     instance_type: c3.large
 
 jobs:
@@ -178,7 +178,7 @@ networks:
     reserved: ["10.0.16.2 - 10.0.16.128"]
     static: ["10.0.16.129 - 10.0.16.140"]
     cloud_properties:
-      subnet: subnet-a3e3dffa # <- REPLACE WITH YOUR PRIVATE SUBNET ID
+      subnet: {{ private_subnet_id }} # <- REPLACE WITH YOUR PRIVATE SUBNET ID
 
 properties:
   loggregator_endpoint:
@@ -200,7 +200,7 @@ properties:
       skip_cert_verify: true
     cc_uploader:
       cc:
-        base_url: https://api.52.7.62.79.xip.io
+        base_url: https://api.{{ system_domain }}
         basic_auth_password: PASSWORD
         staging_upload_password: PASSWORD
         staging_upload_user: staging_upload_user
@@ -298,8 +298,6 @@ properties:
           XCAuu6OuNcVb7RktBAzVJksp+fT5BeyYYm3KviaD2eXmRnJtpUSzN12VieyBX7Fx
           BSgiGpK7DUMYgC6mggfL8bPrhWG3B39Q+VC8B6K/Y29xe8HZQThhick=
           -----END RSA PRIVATE KEY-----
-        #client_session_cache_size: null
-        #max_idle_conns_per_host: null
         require_ssl: false
       diego_credentials: ""
       enable_cf_auth: true
@@ -335,8 +333,7 @@ properties:
       servers:
       - 10.0.16.130
       uaa_secret: PASSWORD
-      uaa_token_url: https://uaa.52.7.62.79.xip.io/oauth/token
-
+      uaa_token_url: https://uaa.{{ system_domain }}/oauth/token
 
     route_emitter:
       bbs:
@@ -425,8 +422,6 @@ properties:
           XCAuu6OuNcVb7RktBAzVJksp+fT5BeyYYm3KviaD2eXmRnJtpUSzN12VieyBX7Fx
           BSgiGpK7DUMYgC6mggfL8bPrhWG3B39Q+VC8B6K/Y29xe8HZQThhick=
           -----END RSA PRIVATE KEY-----
-        #client_session_cache_size: null
-        #max_idle_conns_per_host: null
         require_ssl: false
       log_level: error
       nats:
@@ -523,7 +518,7 @@ properties:
           -----END RSA PRIVATE KEY-----
         require_ssl: false
       cc:
-        base_url: https://api.52.7.62.79.xip.io
+        base_url: https://api.{{ system_domain }}
         basic_auth_password: PASSWORD
         staging_upload_password: PASSWORD
         staging_upload_user: staging_upload_user
@@ -616,11 +611,9 @@ properties:
           XCAuu6OuNcVb7RktBAzVJksp+fT5BeyYYm3KviaD2eXmRnJtpUSzN12VieyBX7Fx
           BSgiGpK7DUMYgC6mggfL8bPrhWG3B39Q+VC8B6K/Y29xe8HZQThhick=
           -----END RSA PRIVATE KEY-----
-        #client_session_cache_size: null
-        #max_idle_conns_per_host: null
         require_ssl: false
       cc:
-        base_url: https://api.52.7.62.79.xip.io
+        base_url: https://api.{{ system_domain }}
         basic_auth_password: PASSWORD
         staging_upload_password: PASSWORD
         staging_upload_user: staging_upload_user
@@ -714,11 +707,11 @@ properties:
           -----END RSA PRIVATE KEY-----
         require_ssl: false
       cc:
-        base_url: https://api.52.7.62.79.xip.io
+        base_url: https://api.{{ system_domain }}
         basic_auth_password: PASSWORD
         staging_upload_password: PASSWORD
         staging_upload_user: staging_upload_user
-      traffic_controller_url: wss://doppler.52.7.62.79.xip.io:443
+      traffic_controller_url: wss://doppler.{{ system_domain }}:443
     rep:
       bbs:
         api_location: bbs.service.cf.internal:8889
@@ -806,8 +799,6 @@ properties:
           XCAuu6OuNcVb7RktBAzVJksp+fT5BeyYYm3KviaD2eXmRnJtpUSzN12VieyBX7Fx
           BSgiGpK7DUMYgC6mggfL8bPrhWG3B39Q+VC8B6K/Y29xe8HZQThhick=
           -----END RSA PRIVATE KEY-----
-        #client_session_cache_size: null
-        #max_idle_conns_per_host: null
         require_ssl: false
       evacuation_timeout_in_seconds: 60
       log_level: error
@@ -1407,7 +1398,6 @@ properties:
         -----END RSA PRIVATE KEY-----
   consul:
     agent:
-      #log_level: null
       servers:
         lan:
         - 10.0.16.100
@@ -1553,18 +1543,13 @@ properties:
       BKcJHlf9kYxFaLL17iOq9rY0+LURr63BkRa2uyn489luxcHnTjk=
       -----END RSA PRIVATE KEY-----
   garden:
-    #allow_host_access: null
     allow_networks:
     - 10.0.16.0/24
     deny_networks:
     - 0.0.0.0/0
     disk_quota_enabled: false
     enable_graph_cleanup: true
-    #insecure_docker_registry_list: null
-    #listen_address: 0.0.0.0:7777
-    #listen_network: tcp
     mount_btrfs_loopback: false
-    #network_mtu: null
     persistent_image_list:
     - /var/vcap/packages/rootfs_cflinuxfs2/rootfs
 releases:
@@ -1582,7 +1567,7 @@ resource_pools:
     name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
     version: latest
   cloud_properties:
-    availability_zone: us-east-1d
+    availability_zone: {{ availability_zone }}
     instance_type: t2.medium
 - name: brain_z1
   network: cf_private
@@ -1590,7 +1575,7 @@ resource_pools:
     name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
     version: latest
   cloud_properties:
-    availability_zone: us-east-1d
+    availability_zone: {{ availability_zone }}
     instance_type: t2.medium
 - name: cell_z1
   network: cf_private
@@ -1598,7 +1583,7 @@ resource_pools:
     name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
     version: latest
   cloud_properties:
-    availability_zone: us-east-1d
+    availability_zone: {{ availability_zone }}
     instance_type: r3.xlarge
 - name: cc_bridge_z1
   network: cf_private
@@ -1606,7 +1591,7 @@ resource_pools:
     name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
     version: latest
   cloud_properties:
-    availability_zone: us-east-1d
+    availability_zone: {{ availability_zone }}
     instance_type: t2.medium
 - name: route_emitter_z1
   network: cf_private
@@ -1614,7 +1599,7 @@ resource_pools:
     name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
     version: latest
   cloud_properties:
-    availability_zone: us-east-1d
+    availability_zone: {{ availability_zone }}
     instance_type: t2.medium
 - name: access_z1
   network: cf_private
@@ -1622,8 +1607,9 @@ resource_pools:
     name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
     version: latest
   cloud_properties:
-    availability_zone: us-east-1d
+    availability_zone: {{ availability_zone }}
     instance_type: t2.medium
+
 update:
   canaries: 1
   canary_watch_time: 5000-120000

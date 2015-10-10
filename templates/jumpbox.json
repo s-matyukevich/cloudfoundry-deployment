@@ -160,7 +160,7 @@
               "install_jumpbox" : [
                 "install_cfn_hup", "install_ruby2", "install_bosh_init",
                 "install_bosh_cli", "install_bosh_manifest",
-                "install_cf_staff", "deploy_bosh", "render_manifest"
+                "install_cf_staff", "deploy_bosh", "render_manifest", "install_diego"
               ],
               "update_jumpbox": [
                 "install_cfn_hup", "render_manifest"
@@ -266,6 +266,20 @@
             },
 
             "install_diego": {
+              "files": {
+                "/home/ubuntu/diego/manifest/diego.yml" : {
+                  "source": { "Fn::Join" : ["", ["https://s3.amazonaws.com/", { "Ref":"bucketName" }, "/diego/diego-", { "Fn::FindInMap" : [ "CfReleasesMap", { "Ref" : "cfRelease" }, "diego"]}, ".yml"]] },
+                  "context" : {
+                     "private_subnet_id" : { "Ref" : "CFSubnetid" },
+                     "availability_zone": { "Ref" : "boshAZ" },
+                     "system_domain": { "Fn::Join" : ["", [ { "Ref":"CFEIP" }, ".xip.io"]] }
+                  },
+                  "mode" : "000644",
+                  "owner"   : "ubuntu",
+                  "group"   : "ubuntu",
+                  "authentication":"S3AccessCreds"
+                }
+              },
               "commands" : {
                 "01_upload_diego_release" : {
                   "command" : {"Fn::Join": [ "", [ "su ubuntu -c \"bosh upload release https://s3.amazonaws.com/altoros-cf-releases/diego-", { "Fn::FindInMap" : [ "CfReleasesMap", { "Ref" : "cfRelease" }, "diego"]}, ".tgz >>/var/log/bosh.log\""]]},
@@ -273,6 +287,20 @@
                 },
                 "02_upload_garden_linux_release" : {
                   "command" : {"Fn::Join": [ "", [ "su ubuntu -c \"bosh upload release https://s3.amazonaws.com/altoros-cf-releases/garden-linux-", { "Fn::FindInMap" : [ "CfReleasesMap", { "Ref" : "cfRelease" }, "gardenLinux"]}, ".tgz >>/var/log/bosh.log\""]]},
+                  "env" : { "HOME" : "/home/ubuntu" }
+                },
+                "03_render_manifest" : {
+                  "command" : "su ubuntu -c \"sed -i -e \"s/REPLACE_WITH_DIRECTOR_ID/$(bosh status --uuid)/\" /home/ubuntu/diego/manifest/diego.yml\"",
+                  "env" : { "HOME" : "/home/ubuntu" }
+                },
+
+                "04_bosh_deployment" : {
+                  "command" :  "su ubuntu -c \"bosh deployment /home/ubuntu/diego/manifest/diego.yml >>/var/log/bosh.log\"",
+                  "env" : { "HOME" : "/home/ubuntu" }
+                },
+
+                "05_bosh_deploy" : {
+                  "command" : "su ubuntu -c \"bosh -n deploy>>/var/log/bosh.log\"",
                   "env" : { "HOME" : "/home/ubuntu" }
                 }
 
