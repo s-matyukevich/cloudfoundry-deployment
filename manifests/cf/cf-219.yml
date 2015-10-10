@@ -143,11 +143,17 @@ jobs:
   - {name: cloud_controller_worker, release: cf}
   - {name: cloud_controller_clock, release: cf}
   - {name: metron_agent, release: cf}
+  - {name: consul_agent, release: cf}
   - {name: nfs_mounter, release: cf}
   - {name: route_registrar, release: cf}
   networks:
   - name: cf_private
   properties:
+    consul:
+      agent:
+        services:
+          cloud_controller_ng: {}
+          routing-api: {}
     nfs_server:
       address: 10.0.16.105
       allow_from_entries: [10.0.16.0/24]
@@ -285,9 +291,14 @@ jobs:
   - {name: uaa, release: cf}
   - {name: metron_agent, release: cf}
   - {name: route_registrar, release: cf}
+  - {name: consul_agent, release: cf}
   networks:
   - name: cf_private
   properties:
+    consul:
+      agent:
+        services:
+          uaa: {}
     login:
       catalina_opts: -Xmx768m -XX:MaxPermSize=256m
     route_registrar:
@@ -326,10 +337,15 @@ jobs:
   templates:
   - {name: gorouter, release: cf}
   - {name: metron_agent, release: cf}
+  - {name: consul_agent, release: cf}
   networks:
   - name: cf_private
     static_ips: [10.0.16.102]
   properties:
+    consul:
+      agent:
+        services:
+          gorouter: {}
     dropsonde: {enabled: true}
 
 - name: runner_z1

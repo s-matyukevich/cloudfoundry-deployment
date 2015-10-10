@@ -76,6 +76,8 @@ IMPORTANT: Before deletion of stack do not forget to delete (from JumpBox):
 - secure deployment (SG, ACLs, generated passwords, keys, certificates etc)
 - use spot instances
 - add .Net cell to Diego
+- add CF smoke_tests
+- add automated release of all resources
 
 ####Useful links:
 
