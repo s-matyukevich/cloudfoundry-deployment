@@ -464,8 +464,16 @@
       "JumpBoxPublicIp": {
         "Description": "Public IP address of JumpBox instance",
         "Value": { "Fn::GetAtt" : [ "jumpbox" , "PublicIp" ] }
+      },
+
+      "BoshPublicIp": {
+        "Description": "Public IP address of BOSH instance",
+        "Value": { "Ref": "boshEIP" }
+      },
+
+      "CFPublicIp": {
+        "Description": "Public IP address of CF load balancer",
+        "Value": { "Fn::Join" : ["", ["api.", { "Ref": "CFEIP" }, "xip.io"]]}
       }
-
     }
-
 }

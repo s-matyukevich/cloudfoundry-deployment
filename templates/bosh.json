@@ -143,6 +143,15 @@
       "JumpBoxPublicIp": {
         "Description": "Public IP address of JumpBox instance",
         "Value": { "Fn::GetAtt" : [  "jumpBox", "Outputs.JumpBoxPublicIp" ] }
+      },
+      "BOSHPublicIp": {
+        "Description": "Public IP address of BOSH instance",
+        "Value": { "Fn::GetAtt" : [  "jumpBox", "Outputs.BoshPublicIp" ] }
+      },
+
+      "CFAPIEndpoint": {
+        "Description": "Public IP address of BOSH instance",
+        "Value": { "Fn::GetAtt" : [  "jumpBox", "Outputs.CFPublicIp" ] }
       }
     }
 }
