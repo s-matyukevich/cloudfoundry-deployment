@@ -1,4 +1,4 @@
-director_uuid: f25bfc8a-2ef9-4aa8-b085-6cc2efb00857 # <- REPLACE WITH YOUR UUID
+director_uuid: d05b458c-08a8-426a-93aa-a5bb950cdc2b # <- REPLACE WITH YOUR UUID
 
 compilation:
   workers: 6
@@ -178,7 +178,7 @@ networks:
     reserved: ["10.0.16.2 - 10.0.16.128"]
     static: ["10.0.16.129 - 10.0.16.140"]
     cloud_properties:
-      subnet: subnet-2a5c6173 # <- REPLACE WITH YOUR PRIVATE SUBNET ID
+      subnet: subnet-a3e3dffa # <- REPLACE WITH YOUR PRIVATE SUBNET ID
 
 properties:
   loggregator_endpoint:
@@ -196,9 +196,11 @@ properties:
     port: 4222
     user: nats
   diego:
+    ssl:
+      skip_cert_verify: true
     cc_uploader:
       cc:
-        base_url: https://api.52.2.158.212.xip.io
+        base_url: https://api.52.7.62.79.xip.io
         basic_auth_password: PASSWORD
         staging_upload_password: PASSWORD
         staging_upload_user: staging_upload_user
@@ -298,7 +300,7 @@ properties:
           -----END RSA PRIVATE KEY-----
         #client_session_cache_size: null
         #max_idle_conns_per_host: null
-        require_ssl: true
+        require_ssl: false
       diego_credentials: ""
       enable_cf_auth: true
       enable_diego_auth: true
@@ -333,7 +335,7 @@ properties:
       servers:
       - 10.0.16.130
       uaa_secret: PASSWORD
-      uaa_token_url: https://uaa.52.2.158.212.xip.io/oauth/token
+      uaa_token_url: https://uaa.52.7.62.79.xip.io/oauth/token
 
 
     route_emitter:
@@ -521,7 +523,7 @@ properties:
           -----END RSA PRIVATE KEY-----
         require_ssl: false
       cc:
-        base_url: https://api.52.2.158.212.xip.io
+        base_url: https://api.52.7.62.79.xip.io
         basic_auth_password: PASSWORD
         staging_upload_password: PASSWORD
         staging_upload_user: staging_upload_user
@@ -618,7 +620,7 @@ properties:
         #max_idle_conns_per_host: null
         require_ssl: false
       cc:
-        base_url: https://api.52.2.158.212.xip.io
+        base_url: https://api.52.7.62.79.xip.io
         basic_auth_password: PASSWORD
         staging_upload_password: PASSWORD
         staging_upload_user: staging_upload_user
@@ -712,11 +714,11 @@ properties:
           -----END RSA PRIVATE KEY-----
         require_ssl: false
       cc:
-        base_url: https://api.52.2.158.212.xip.io
+        base_url: https://api.52.7.62.79.xip.io
         basic_auth_password: PASSWORD
         staging_upload_password: PASSWORD
         staging_upload_user: staging_upload_user
-      traffic_controller_url: wss://doppler.52.2.158.212.xip.io:443
+      traffic_controller_url: wss://doppler.52.7.62.79.xip.io:443
     rep:
       bbs:
         api_location: bbs.service.cf.internal:8889
@@ -897,7 +899,7 @@ properties:
           XCAuu6OuNcVb7RktBAzVJksp+fT5BeyYYm3KviaD2eXmRnJtpUSzN12VieyBX7Fx
           BSgiGpK7DUMYgC6mggfL8bPrhWG3B39Q+VC8B6K/Y29xe8HZQThhick=
           -----END RSA PRIVATE KEY-----
-        require_ssl: true
+        require_ssl: false
     auctioneer:
       bbs:
         api_location: bbs.service.cf.internal:8889
@@ -985,7 +987,7 @@ properties:
           XCAuu6OuNcVb7RktBAzVJksp+fT5BeyYYm3KviaD2eXmRnJtpUSzN12VieyBX7Fx
           BSgiGpK7DUMYgC6mggfL8bPrhWG3B39Q+VC8B6K/Y29xe8HZQThhick=
           -----END RSA PRIVATE KEY-----
-        require_ssl: true
+        require_ssl: false
     bbs:
       active_key_label: key1
       auctioneer:
@@ -1112,9 +1114,9 @@ properties:
         machines:
         - etcd.service.cf.internal
         #max_idle_conns_per_host: null
-        require_ssl: true
+        require_ssl: false
       #log_level: null
-      require_ssl: true
+      require_ssl: false
       server_cert: |+
         -----BEGIN CERTIFICATE-----
         MIIEazCCAlWgAwIBAgIRAIOWWoawVu/3LXvo9vB7VkkwCwYJKoZIhvcNAQELMBAx
@@ -1171,7 +1173,7 @@ properties:
         9zLg09X4FrqSGzB28NK51FQo+KU/T2hZrdXY7UBE0P4wC8LZfRzB
         -----END RSA PRIVATE KEY-----
 
-    etcd:
+    etcd: # diego etcd properties
       ca_cert: |+
         -----BEGIN CERTIFICATE-----
         MIIFATCCAuugAwIBAgIBATALBgkqhkiG9w0BAQswEjEQMA4GA1UEAxMHZGllZ29D
@@ -1346,8 +1348,8 @@ properties:
         FtRlQt2oJnU/G0/sek1RCFdCWjGVklIPNwOyjXc3ZU4YPF+/WR07x1VLL14KEPN7
         QByXVUoXMbBBtmUyhVTizXhpNBP2dELMk+NVdnVWHCiGTtBAUTpk
         -----END RSA PRIVATE KEY-----
-      peer_require_ssl: true
-      require_ssl: true
+      peer_require_ssl: false
+      require_ssl: false
       server_cert: |+
         -----BEGIN CERTIFICATE-----
         MIIEcDCCAlqgAwIBAgIRANOoYOncPrjiL/mlurlyOFYwCwYJKoZIhvcNAQELMBIx
@@ -1597,7 +1599,7 @@ resource_pools:
     version: latest
   cloud_properties:
     availability_zone: us-east-1d
-    instance_type: t2.medium
+    instance_type: r3.xlarge
 - name: cc_bridge_z1
   network: cf_private
   stemcell:
