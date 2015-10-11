@@ -289,17 +289,22 @@
                   "command" : {"Fn::Join": [ "", [ "su ubuntu -c \"bosh upload release https://s3.amazonaws.com/altoros-cf-releases/garden-linux-", { "Fn::FindInMap" : [ "CfReleasesMap", { "Ref" : "cfRelease" }, "gardenLinux"]}, ".tgz >>/var/log/bosh.log\""]]},
                   "env" : { "HOME" : "/home/ubuntu" }
                 },
-                "03_render_manifest" : {
+
+                "03_touch_log" : {
+                  "command" : "chown -R ubuntu: /home/ubuntu"
+                },
+
+                "04_render_manifest" : {
                   "command" : "su ubuntu -c \"sed -i -e \"s/REPLACE_WITH_DIRECTOR_ID/$(bosh status --uuid)/\" /home/ubuntu/diego/manifest/diego.yml\"",
                   "env" : { "HOME" : "/home/ubuntu" }
                 },
 
-                "04_bosh_deployment" : {
+                "05_bosh_deployment" : {
                   "command" :  "su ubuntu -c \"bosh deployment /home/ubuntu/diego/manifest/diego.yml >>/var/log/bosh.log\"",
                   "env" : { "HOME" : "/home/ubuntu" }
                 },
 
-                "05_bosh_deploy" : {
+                "06_bosh_deploy" : {
                   "command" : "su ubuntu -c \"bosh -n deploy>>/var/log/bosh.log\"",
                   "env" : { "HOME" : "/home/ubuntu" }
                 }
@@ -321,6 +326,21 @@
                      "system_domain": { "Fn::Join" : ["", [ { "Ref":"CFEIP" }, ".xip.io"]] }
                   },
                   "mode" : "000644",
+                  "owner"   : "ubuntu",
+                  "group"   : "ubuntu",
+                  "authentication":"S3AccessCreds"
+                },
+
+                "/home/ubuntu/scripts/destoy_all.sh" : {
+                  "content" : { "Fn::Join" : ["", [
+                    "#!/bin/bash\n",
+                    "bosh -n delete deployment diego\n",
+                    "bosh -n delete deployment cf\n",
+                    "bosh-init delete /home/ubuntu/my-bosh/micro.yml\n"
+                  ]]},
+                  "mode" : "000755",
+                  "owner"   : "ubuntu",
+                  "group"   : "ubuntu",
                   "authentication":"S3AccessCreds"
                 },
 
@@ -501,7 +521,7 @@
 
       "CFPublicIp": {
         "Description": "Public IP address of CF load balancer",
-        "Value": { "Fn::Join" : ["", ["api.", { "Ref": "CFEIP" }, "xip.io"]]}
+        "Value": { "Fn::Join" : ["", ["api.", { "Ref": "CFEIP" }, ".xip.io"]]}
       }
     }
 }

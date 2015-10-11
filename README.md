@@ -70,17 +70,9 @@ cf start dora && cf logs dora --recent
 
 ##Deletion of stack:
 
-IMPORTANT: Before deletion of stack do not forget to delete (from JumpBox):
-- CF deployment
-```$bosh -n delete deployment cf```
-- micro bosh instance
-```$cd /home/ubuntu/my-bosh && bosh-init delete micro.yml```
+IMPORTANT: Before deletion of stack delete all deployments by:
+```ssh -i bosh.pem ubuntu@JUMPBOX_IP /home/ubuntu/scripts/destoy_all.sh```
 
-```
-ssh -i bosh.pem ubuntu@ec2-52-23-247-34.compute-1.amazonaws.com bosh -n delete deployment diego
-ssh -i bosh.pem ubuntu@ec2-52-23-247-34.compute-1.amazonaws.com bosh -n delete deployment cf
-ssh -i bosh.pem ubuntu@ec2-52-23-247-34.compute-1.amazonaws.com bosh-init delete /home/ubuntu/my-bosh/micro.yml
-```
 
 ###WIP:
 - add Diego
