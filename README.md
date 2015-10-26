@@ -1,7 +1,7 @@
-#Cloud Foundry Deployment to AWS
+#Cloud Foundry/Diego Deployment to AWS
 
-Ther repository includes  set of Cloud Formation templates to deploy Cloud Foundry on AWS.
-The deployment is an example of a minimalistic deployment of Cloud Foundry, including all crucial components for its basic funcionality. It allows you to deploy Cloud Foundry for educational purposes, so you can poke around and break things.
+Ther repository includes  set of Cloud Formation templates to deploy Cloud Foundry and Diego on AWS.
+The deployment is an example of a minimalistic deployment of Cloud Foundry/Diego, including all crucial components for its basic functionality. It allows you to deploy Cloud Foundry/Diego for educational purposes, so you can poke around and break things.
 
 IMPORTANT: This is not meant to be used for a production level deployment as it doesn't include features such as high availability and security.
 
@@ -19,7 +19,9 @@ $scripts/stack.sh create
 
 After a while you will get running CF deployment including:
 - EC2 key pair (stored as bosh.pem)
-- VPC with NAT and JumpBox instances
+- VPC
+- NAT instance (http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_NAT_Instance.html)
+- JumpBox instances
 - (micro)BOSH instance
 - CF deployment (we use aws_minimal CF manifest from cf-release) like:
 ```
@@ -51,18 +53,21 @@ The script generates RSA key pair so to access JumpBox run:
 ```
 $ssh -i bosh.pem ubuntu@PUB_IP_ADDRESS_OF_JUMPBOX
 ```
-To check your CF deployment:
+To run smoke tests against your CF deployment:
+```
+bosh run errand smoke_tests
+```
+
+To use your CF deployment:
 ```
 # PUB_IP_ADDR is the address of load balancer.
-cf login -u admin -p PASSWORD -a api.PUB_IP_ADDR.xip.io --skip-ssl-validation
-cf create-space dev && cf target -o default_organization -s dev
-git clone https://github.com/cloudfoundry/cf-acceptance-tests.git && cd cf-acceptance-tests/assets/dora
-cf push dora && cf logs dora --recent
+cf login -u admin -p YOUR_PASSWORD -a api.PUB_IP_ADDR.xip.io --skip-ssl-validation
 ```
+
 To check Diego:
 ```
 cf push dora --no-start
-cf install-plugin Diego-Beta -r CF-Community
+cf install-plugin Diego-Enabler -r CF-Community
 cf enable-diego dora
 cf start dora && cf logs dora --recent
 ```
@@ -73,17 +78,12 @@ cf start dora && cf logs dora --recent
 IMPORTANT: Before deletion of stack delete all deployments by:
 ```ssh -i bosh.pem ubuntu@JUMPBOX_IP /home/ubuntu/scripts/destoy_all.sh```
 
-
-###WIP:
-- add Diego
-  - add mappings of releases (BOSH - CF - Diego)
-
 ###TODOs:
 - secure deployment (SG, ACLs, generated passwords, keys, certificates etc)
-- use spot instances
 - add .Net cell to Diego
 - add CF smoke_tests
 - add automated release of all resources
+- reduce costs by combining components and/or using cheap instance types (use spot instances?)
 
 ####Useful links:
 

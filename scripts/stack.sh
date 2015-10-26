@@ -53,7 +53,8 @@ create-stack() {
                                   ParameterKey=bucketName,ParameterValue=$bucket_name \
                                   ParameterKey=jbrelease,ParameterValue=$jbrelease \
                                   ParameterKey=cfRelease,ParameterValue=$CF_RELEASE \
-                                  ParameterKey=KeyName,ParameterValue=bosh-${STACK_NAME}
+                                  ParameterKey=KeyName,ParameterValue=bosh-${STACK_NAME} \
+                                  ParameterKey=secret,ParameterValue=${SECRET}
 
 }
 
@@ -68,7 +69,8 @@ update-stack() {
                                   ParameterKey=bucketName,ParameterValue=$bucket_name \
                                   ParameterKey=jbrelease,ParameterValue=$jbrelease \
                                   ParameterKey=cfRelease,ParameterValue=$CF_RELEASE \
-                                  ParameterKey=KeyName,ParameterValue=bosh-${STACK_NAME}
+                                  ParameterKey=KeyName,ParameterValue=bosh-${STACK_NAME} \
+                                  ParameterKey=secret,ParameterValue=${SECRET}
 }
 
 case $1 in

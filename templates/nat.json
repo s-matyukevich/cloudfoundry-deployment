@@ -45,7 +45,7 @@
 
 
       "NatRegionMap" : {
-        "us-east-1"      : { "AMI" : "ami-224dc94a" }
+        "us-east-1"      : { "AMI" : "ami-c02b04a8" }
       }
     },
 

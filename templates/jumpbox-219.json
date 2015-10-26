@@ -30,8 +30,7 @@
 
       "secret" : {
         "Description" : "Password",
-        "Type" : "String",
-        "NoEcho": "true"
+        "Type" : "String"
       },
 
       "cfRelease" : {
@@ -167,11 +166,12 @@
               "install_jumpbox" : [
                 "install_cfn_hup", "install_ruby2", "install_bosh_init",
                 "install_bosh_cli", "install_bosh_manifest",
-                "render_cf_manifest", "deploy_bosh", "set_bosh_uuid_cf",
-                "upload_stemcell", "upload_cf_release", "deploy_cf"
+                "install_cf_staff", "deploy_bosh", "render_cf_manifest",
+                "upload_stemcell", "upload_cf_release", "deploy_cf",
+                "install_diego"
               ],
               "update_jumpbox": [
-                "install_cfn_hup", "set_bosh_uuid_cf"
+                "install_cfn_hup", "render_cf_manifest"
               ]
             },
 
@@ -230,7 +230,7 @@
               }
             },
 
-            "set_bosh_uuid_cf": {
+            "render_cf_manifest": {
               "commands" : {
                 "04_target_bosh" : {
                   "command" : { "Fn::Join" : ["", ["su ubuntu -c \"bosh -n target ", { "Ref":"boshEIP" }, " microbosh >>/var/log/bosh.log\""]] },
@@ -277,8 +277,7 @@
 
                 "10_bosh_deploy" : {
                   "command" : "su ubuntu -c \"bosh -n deploy>>/var/log/bosh.log\"",
-                  "env" : { "HOME" : "/home/ubuntu" },
-                  "ignoreErrors": "true"
+                  "env" : { "HOME" : "/home/ubuntu" }
                 }
 
               }
@@ -290,7 +289,7 @@
                 "/home/ubuntu/diego/manifest/diego.yml" : {
                   "source": { "Fn::Join" : ["", ["https://s3.amazonaws.com/", { "Ref":"bucketName" }, "/diego/diego-", { "Fn::FindInMap" : [ "CfReleasesMap", { "Ref" : "cfRelease" }, "diego"]}, ".yml"]] },
                   "context" : {
-                     "secret" : { "Ref" : "secret" },
+                     "secret" : { "Ref" : "sectret" },
                      "private_subnet_id" : { "Ref" : "CFSubnetid" },
                      "availability_zone": { "Ref" : "boshAZ" },
                      "system_domain": { "Fn::Join" : ["", [ { "Ref":"CFEIP" }, ".xip.io"]] }
@@ -303,35 +302,29 @@
               },
               "commands" : {
                 "01_upload_diego_release" : {
-                  "command" : {"Fn::Join": [ "", [ "su ubuntu -c \"bosh upload release https://github.com/cloudfoundry-incubator/diego-release/releases/download/v", { "Fn::FindInMap" : [ "CfReleasesMap", { "Ref" : "cfRelease" }, "diego"]}, "/diego-", { "Fn::FindInMap" : [ "CfReleasesMap", { "Ref" : "cfRelease" }, "diego"] }, ".tgz >>/var/log/bosh.log\""]]},
-                  "env" : { "HOME" : "/home/ubuntu" },
-                  "ignoreErrors": "true"
+                  "command" : {"Fn::Join": [ "", [ "su ubuntu -c \"bosh upload release https://s3.amazonaws.com/altoros-cf-releases/diego-", { "Fn::FindInMap" : [ "CfReleasesMap", { "Ref" : "cfRelease" }, "diego"]}, ".tgz >>/var/log/bosh.log\""]]},
+                  "env" : { "HOME" : "/home/ubuntu" }
                 },
                 "02_upload_garden_linux_release" : {
-                  "command" : {"Fn::Join": [ "", [ "su ubuntu -c \"bosh upload release https://github.com/cloudfoundry-incubator/diego-release/releases/download/v", { "Fn::FindInMap" : [ "CfReleasesMap", { "Ref" : "cfRelease" }, "diego"]}, "/garden-linux-", { "Fn::FindInMap" : [ "CfReleasesMap", { "Ref" : "cfRelease" }, "gardenLinux"]}, ".tgz >>/var/log/bosh.log\""]]},
+                  "command" : {"Fn::Join": [ "", [ "su ubuntu -c \"bosh upload release https://s3.amazonaws.com/altoros-cf-releases/garden-linux-", { "Fn::FindInMap" : [ "CfReleasesMap", { "Ref" : "cfRelease" }, "gardenLinux"]}, ".tgz >>/var/log/bosh.log\""]]},
                   "env" : { "HOME" : "/home/ubuntu" }
                 },
 
-                "03_upload_etcd_release" : {
-                  "command" : {"Fn::Join": [ "", [ "su ubuntu -c \"bosh upload release https://github.com/cloudfoundry-incubator/diego-release/releases/download/v", { "Fn::FindInMap" : [ "CfReleasesMap", { "Ref" : "cfRelease" }, "diego"]}, "/etcd-", { "Fn::FindInMap" : [ "CfReleasesMap", { "Ref" : "cfRelease" }, "etcd"]}, ".tgz >>/var/log/bosh.log\""]]},
-                  "env" : { "HOME" : "/home/ubuntu" }
-                },
-
-                "04_touch_log" : {
+                "03_touch_log" : {
                   "command" : "chown -R ubuntu: /home/ubuntu"
                 },
 
-                "05_render_manifest" : {
+                "04_render_manifest" : {
                   "command" : "su ubuntu -c \"sed -i -e \"s/REPLACE_WITH_DIRECTOR_ID/$(bosh status --uuid)/\" /home/ubuntu/diego/manifest/diego.yml\"",
                   "env" : { "HOME" : "/home/ubuntu" }
                 },
 
-                "06_bosh_deployment" : {
+                "05_bosh_deployment" : {
                   "command" :  "su ubuntu -c \"bosh deployment /home/ubuntu/diego/manifest/diego.yml >>/var/log/bosh.log\"",
                   "env" : { "HOME" : "/home/ubuntu" }
                 },
 
-                "07_bosh_deploy" : {
+                "06_bosh_deploy" : {
                   "command" : "su ubuntu -c \"bosh -n deploy>>/var/log/bosh.log\"",
                   "env" : { "HOME" : "/home/ubuntu" }
                 }
@@ -339,12 +332,11 @@
               }
             },
 
-            "render_cf_manifest": {
+            "install_cf_staff": {
               "files": {
                 "/home/ubuntu/cf/manifest/cf.yml" : {
                   "source": { "Fn::Join" : ["", ["https://s3.amazonaws.com/", { "Ref":"bucketName" }, "/cf/cf-", { "Ref":"cfRelease" }, ".yml"]] },
                   "context" : {
-                     "secret" : { "Ref" : "secret" },
                      "private_subnet_id" : { "Ref" : "CFSubnetid" },
                      "public_subnet_id" : { "Ref" : "boshSubnetid" },
                      "public_sg_id" : { "Ref" : "jumpBoxSGId" },

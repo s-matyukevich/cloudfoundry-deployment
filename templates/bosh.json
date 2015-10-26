@@ -51,6 +51,12 @@
       "cfRelease" : {
         "Description" : "Number of release to use",
         "Type" : "String"
+      },
+
+      "secret" : {
+        "Description" : "Password",
+        "Type" : "String",
+        "NoEcho": "true"
       }
 
     },
@@ -107,7 +113,8 @@
               "awsSecretAccessKey": { "Ref": "awsSecretAccessKey" },
               "bucketName": { "Ref": "bucketName" },
               "jbrelease": { "Ref": "jbrelease" },
-              "cfRelease": { "Ref": "cfRelease" }
+              "cfRelease": { "Ref": "cfRelease" },
+              "secret": { "Ref": "secret" }
             }
 
          },
